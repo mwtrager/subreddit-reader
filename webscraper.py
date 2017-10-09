@@ -4,9 +4,13 @@
 # imports
 from requests import get
 from bs4 import BeautifulSoup as make_me_soup
+import nltk
+
+post = 'https://www.reddit.com/r/cscareerquestions/comments/751ylo/do_you_think_developers_should_be_shielded/'
+print ('Building list from ' + post)
 
 # get a post
-r = get('https://www.reddit.com/r/cscareerquestions/comments/751tqk/unsure_how_much_to_ask_for_after_school/')
+r = get(post)
 
 # get html from response
 html = r.text
@@ -31,13 +35,24 @@ else:
     # TODO fix this
     divs = divs[1:]
 
-    # build word lists from comments
-    # TODO need nltk here
+    # tokenize comments
     comments_wordlists = []
     for div in divs:
-        child = div.find('p')
-        text = child.get_text()
-        wordlist = text.split(' ')
-        comments_wordlists.append(wordlist)
+        # use div.get_text to get all text of all children nodes to div.usertext-body
+        text = div.get_text()
+        tokens = nltk.word_tokenize(text)
+        # print(tokens)
+        comments_wordlists.append(tokens)
 
+    # output for testing
+    print('Length of comments_worldlist should be equal to comments on post + 1 (for OP)')
+    print(len(comments_wordlists))
+    
+    print('printing OP')
     print(comments_wordlists[:1])
+
+    print('printing first comment')
+    print(comments_wordlists[1:2])
+    
+    print('print last comment')
+    print(comments_wordlists[-1:])
