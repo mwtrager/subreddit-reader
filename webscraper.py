@@ -5,7 +5,7 @@
 from requests import get
 from bs4 import BeautifulSoup as make_me_soup
 
-# get a subreddit
+# get a post
 r = get('https://www.reddit.com/r/cscareerquestions/comments/751tqk/unsure_how_much_to_ask_for_after_school/')
 
 # get html from response
