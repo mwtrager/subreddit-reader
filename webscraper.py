@@ -14,28 +14,29 @@ html = r.text
 soup = make_me_soup(html, 'html.parser')
 
 # when there is only one link on the page, it means we were detected as a bot
-def we_are_human():    
+def we_are_bot():
     links = []
     for link in soup.find_all('a'):
         links.append(link)
-        return len(links) == 1            
-if we_are_human() is False:
+
+    return len(links) == 1
+
+if we_are_bot():
     print('detected as bot :(')
+else:
+    # find all divs with class usertext-body
+    divs = soup('div', class_='usertext-body')
 
-# find all divs with class usertext-body
-divs = soup('div', class_='usertext-body')
+    # ignore the first one because its garbage
+    # TODO fix this
+    divs = divs[1:]
 
-# ignore the first one because its garbage
-# TODO fix this
-divs = divs[1:]
+    # build word lists from comments
+    comments_wordlists = []
+    for div in divs:
+        child = div.find('p')
+        text = child.get_text()
+        wordlist = text.split(' ')
+        comments_wordlists.append(wordlist)
 
-# build word lists from comments
-comments_wordlists = []
-for div in divs:
-    child = div.find('p')
-    text = child.get_text()
-    wordlist = text.split(' ')
-    comments_wordlists.append(wordlist)
-
-print(comments_wordlists[:1])
-
+    print(comments_wordlists[:1])
