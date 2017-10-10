@@ -77,13 +77,23 @@ def get_reddit_posts(url):
 # right now it returns the vocab of each post
 def get_vocab_from_posts(posts):
     # put all words into same list to make this easier
+    post_words = []
     all_words = []
 
-    # so for each post, append words to all_words
+    # so for each post, append words to post_words
     for post in posts:
-        all_words.append([word.lower() for word in post if word.isalpha()]) # BUG it still returns a list of lists!
-        # vocab = sorted(set(words))
-        # post_vocabs.append(vocab)
+        post_words.append([word.lower() for word in post if word.isalpha()]) # BUG it still returns a list of lists
+        [all_words.append(word) for post in post_words for word in post] # list comprehension. is this coshure?
 
-    # print(all_words)
-    return post_vocabs
+        vocab = sorted(set(all_words))
+
+    return vocab
+
+
+
+# def stress(pron):
+# ...     return [char for phone in pron for char in phone if char.isdigit()]
+
+
+# get vocab
+# [page_vocab.append(word) for post in all_words for word in post]
