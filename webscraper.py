@@ -3,31 +3,35 @@
 
 # imports
 from requests import get
-from bs4 import BeautifulSoup as make_me_soup
+from bs4 import BeautifulSoup
 import nltk
 
-post = 'https://www.reddit.com/r/cscareerquestions/comments/751ylo/do_you_think_developers_should_be_shielded/'
-print ('Building list from ' + post)
+def soupify(webpage):
+    print('Making soup with ' + webpage)
 
-# get a post
-r = get(post)
+    # get a post
+    # TODO some sort of error checking here
+    r = get(webpage)
 
-# get html from response
-html = r.text
+    # get html from response
+    # TODO can check for doctype=html formatt
+    html = r.text
 
-soup = make_me_soup(html, 'html.parser')
+    # make me soup!
+    # TODO some sort of error protection here
+    soup =  BeautifulSoup(html, 'html.parser')
+    return soup
 
-# when there is only one <a> on the page, it means we were detected as a bot
-def we_are_bot():
+# for reddit when there is only one <a> on the page, it means we were detected as a bot
+def we_are_bot(soup):
     a_tags = []
     for tag in soup.find_all('a'):
         a_tags.append(tag)
 
     return len(a_tags) == 1
 
-if we_are_bot():
-    print('detected as bot :(')
-else:
+# filter the soup, get the text, tokenize with nltk
+def get_posts_tokenized(soup):
     # find all divs with class usertext-body
     divs = soup('div', class_='usertext-body')
 
@@ -36,23 +40,40 @@ else:
     divs = divs[1:]
 
     # tokenize comments
-    comments_wordlists = []
+    posts_tokenized = []
     for div in divs:
         # use div.get_text to get all text of all children nodes to div.usertext-body
         text = div.get_text()
         tokens = nltk.word_tokenize(text)
         # print(tokens)
-        comments_wordlists.append(tokens)
+        posts_tokenized.append(tokens)
 
-    # output for testing
-    print('Length of comments_worldlist should be equal to comments on post + 1 (for OP)')
-    print(len(comments_wordlists))
-    
-    print('printing OP')
-    print(comments_wordlists[:1])
+    return posts_tokenized
 
-    print('printing first comment')
-    print(comments_wordlists[1:2])
+def get_comments_text(soup):
+    # TODO maybe
+    return comments_text
+
+def get_op(posts):
+    # TODO error check
+    op = posts[0]
+    return op
+
+def get_comments(posts):
+    # TODO error check
+    comments = posts[1:]
+
+# -- PROGRAM START! -- #
+# def get_reddit_post(url):
+url = 'https://www.reddit.com/r/cscareerquestions/comments/751ylo/do_you_think_developers_should_be_shielded/'
+soup = soupify(url)
+
+if we_are_bot(soup):
+    print ('detected as a bot :(')
+else:
+    # TODO error checking to make sure it's a reddit POST and not any other reddit page
+    posts = get_posts_tokenized(soup)
+    op = get_op(posts)
+    comments = get_comments(posts)
+    print(op)
     
-    print('print last comment')
-    print(comments_wordlists[-1:])
