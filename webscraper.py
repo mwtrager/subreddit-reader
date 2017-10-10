@@ -79,17 +79,13 @@ def get_vocab_from_posts(posts):
     # put all words into same list to make this easier
     post_words = []
     all_words = []
-
     # so for each post, append words to post_words
     for post in posts:
-        post_words.append([word.lower() for word in post if word.isalpha()]) # BUG it still returns a list of lists
+        post_words.append([word.lower() for word in post if word.isalpha()])
         [all_words.append(word) for post in post_words for word in post] # list comprehension. is this coshure?
-
+        # TODO need a function to return all_words so that I can easily calculate lexical diversity
         vocab = sorted(set(all_words))
-
     return vocab
-
-
 
 # def stress(pron):
 # ...     return [char for phone in pron for char in phone if char.isdigit()]
