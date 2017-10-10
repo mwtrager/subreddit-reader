@@ -7,8 +7,6 @@ from bs4 import BeautifulSoup
 import nltk
 
 def soupify(webpage):
-    print('Making soup with ' + webpage)
-
     # get a post
     # TODO some sort of error checking here
     r = get(webpage)
@@ -35,8 +33,7 @@ def get_posts_tokenized(soup):
     # find all divs with class usertext-body
     divs = soup('div', class_='usertext-body')
 
-    # ignore the first one because its garbage
-    # TODO fix this
+    # HACK ignore the first one because its the sidebar
     divs = divs[1:]
 
     # tokenize comments
@@ -63,17 +60,30 @@ def get_comments(posts):
     # TODO error check
     comments = posts[1:]
 
-# -- PROGRAM START! -- #
-# def get_reddit_post(url):
-url = 'https://www.reddit.com/r/cscareerquestions/comments/751ylo/do_you_think_developers_should_be_shielded/'
-soup = soupify(url)
+def get_reddit_posts(url):
+    soup = soupify(url)
 
-if we_are_bot(soup):
-    print ('detected as a bot :(')
-else:
-    # TODO error checking to make sure it's a reddit POST and not any other reddit page
-    posts = get_posts_tokenized(soup)
-    op = get_op(posts)
-    comments = get_comments(posts)
-    print(op)
-    
+    # TODO how do we do proper returns?
+    if we_are_bot(soup):
+        return []
+    else:
+        # TODO error checking to make sure it's a reddit POST and not any other reddit page
+        posts = get_posts_tokenized(soup)
+        return posts
+
+# TODO rename and fix
+# BUG using isalpha ignores some data like if someone typed '9gag' maybe
+# i want this to return unique words contained from this entire page
+# right now it returns the vocab of each post
+def get_vocab_from_posts(posts):
+    # put all words into same list to make this easier
+    all_words = []
+
+    # so for each post, append words to all_words
+    for post in posts:
+        all_words.append([word.lower() for word in post if word.isalpha()]) # BUG it still returns a list of lists!
+        # vocab = sorted(set(words))
+        # post_vocabs.append(vocab)
+
+    # print(all_words)
+    return post_vocabs
