@@ -40,6 +40,7 @@ def get_posts_tokenized(soup):
     posts_tokenized = []
     for div in divs:
         # use div.get_text to get all text of all children nodes to div.usertext-body
+        # BUG we ignore emphasis by ignoring bold words, italics, and other html inline formatting
         text = div.get_text()
         tokens = nltk.word_tokenize(text)
         # print(tokens)
