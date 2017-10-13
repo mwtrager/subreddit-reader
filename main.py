@@ -4,14 +4,13 @@ from webscraper import *
 from processing import *
 
 # for url in urls:
-    # do all my shit!!!!!!!!
+    # do everything in this file
     # how do i get such urls?
     # we_are_bot !!!!! it gets all the a-tags on a page...
     # steal that logic and build out a function
     # that will take in a subreddit and give all post urls as output
-    # pass it to this code below and then i will be doing this for each
-    # fucking post on that subreddits front page
-    # get the fuck out here boiiiii
+    # pass it to this code below and then i will be
+    # doing this for each post on that subreddits front page
 
 url = 'https://www.reddit.com/r/cscareerquestions/comments/75ldnr/thank_you/'
 
