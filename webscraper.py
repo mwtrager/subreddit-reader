@@ -1,10 +1,24 @@
-# this program builds lists of words from comments on a given reddit post
+# this module builds lists of text from reddit posts and comments
 # written by Matthew Trager, started 10/7/2017
 
 # imports
 from requests import get
 from bs4 import BeautifulSoup
-import nltk
+
+# -- PUBLIC -- #
+
+def get_reddit_posts(url):
+    soup = soupify(url)
+
+    # TODO how do we do proper returns?
+    if we_are_bot(soup):
+        return []
+    else:
+        # TODO error checking to make sure it's a reddit POST and not any other reddit page
+        posts = get_posts_tokenized(soup)
+        return posts
+
+# -- PRIVATE -- #
 
 def soupify(webpage):
     # get a post
@@ -28,69 +42,15 @@ def we_are_bot(soup):
 
     return len(a_tags) == 1
 
-# filter the soup, get the text, tokenize with nltk
-def get_posts_tokenized(soup):
-    # find all divs with class usertext-body
+# get the divs from the soup that we need
+def get_divs(soup):
     divs = soup('div', class_='usertext-body')
-
-    # HACK ignore the first one because its the sidebar
+    # HACK ignore divs[0] first one because it's the sidebar
     divs = divs[1:]
+    return divs
 
-    # tokenize comments
-    posts_tokenized = []
-    for div in divs:
-        # use div.get_text to get all text of all children nodes to div.usertext-body
-        # BUG we ignore emphasis by ignoring bold words, italics, and other html inline formatting
-        text = div.get_text()
-        tokens = nltk.word_tokenize(text)
-        # print(tokens)
-        posts_tokenized.append(tokens)
-
-    return posts_tokenized
-
-def get_comments_text(soup):
-    # TODO maybe
-    return comments_text
-
-def get_op(posts):
+def get_raw(divs):
     # TODO error check
-    op = posts[0]
-    return op
-
-def get_comments(posts):
-    # TODO error check
-    comments = posts[1:]
-
-def get_reddit_posts(url):
-    soup = soupify(url)
-
-    # TODO how do we do proper returns?
-    if we_are_bot(soup):
-        return []
-    else:
-        # TODO error checking to make sure it's a reddit POST and not any other reddit page
-        posts = get_posts_tokenized(soup)
-        return posts
-
-# TODO rename and fix
-# BUG using isalpha ignores some data like if someone typed '9gag' maybe
-# i want this to return unique words contained from this entire page
-# right now it returns the vocab of each post
-def get_vocab_from_posts(posts):
-    # put all words into same list to make this easier
-    post_words = []
-    all_words = []
-    # so for each post, append words to post_words
-    for post in posts:
-        post_words.append([word.lower() for word in post if word.isalpha()])
-        [all_words.append(word) for post in post_words for word in post] # list comprehension. is this coshure?
-        # TODO need a function to return all_words so that I can easily calculate lexical diversity
-        vocab = sorted(set(all_words))
-    return vocab
-
-# def stress(pron):
-# ...     return [char for phone in pron for char in phone if char.isdigit()]
-
-
-# get vocab
-# [page_vocab.append(word) for post in all_words for word in post]
+    # BUG I'm getting some garbage data with links and whatever
+        # how to avoid?
+    return [div.get_text() for div in divs]

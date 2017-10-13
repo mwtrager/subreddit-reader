@@ -1,49 +1,31 @@
-import nltk # yep
+# this module will do NLP using input from the webscraper
+import nltk
 
-# we're only working with text here. nothing else.
-# no soup, nothing. this is a clean page.
+def tokenize(entries):
+    # TODO error check
+    # BUG I'm getting garbage data from links and shit
+    # NOTE This returns a list of comments, so using len(tokens) returns op + # of comments
+    return [nltk.word_tokenize(entry) for entry in entries]
 
-# what do we want here?
+def get_words(entries):
+    # TODO change variable name? tokens is a little ambiguous...
+    # BUG using isalpha ignores some data like if someone typed '9gag' maybe
+    all_words = []
+    entry_words = []
+    for entry in entries:
+        entry_words.append([word.lower() for word in entry if word.isalpha()])
+        [all_words.append(word) for entry in entry_words for word in entry] # list comprehension. is this koshur?
+    return all_words
 
-# give me the OP as a single list of characters
-# give me the a list comments, each being a list of words
-# this module will process those incoming lists of text
+def get_vocab(words):
+    return set(words)
 
-# combine the op and comment text lists
+def lexical_diversity(words, vocab):
+    return len(vocab)/len(words)
 
-# tokenize the op
-
-# tokenize the comments
-
-# tokenize both combined
-
-# calculate lexical diversity
-
-def combine_op_comments(op, comments):
-    return text
-
-def tokenize(text):
-    # check to see if this is a list or not
-    # if its not a list tokenize it
-    # if it is a list loop through and tokenize
-    # IDEA i wonder if nltk does this with nltk.word_tokenize()
+# def stress(pron):
+# ...     return [char for phone in pron for char in phone if char.isdigit()]
 
 
-
-# find all divs with class usertext-body
-divs = soup('div', class_='usertext-body')
-
-# HACK ignore the first one because its the sidebar
-divs = divs[1:]
-
-# tokenize comments
-posts_tokenized = []
-for div in divs:
-    # use div.get_text to get all text of all children nodes to div.usertext-body
-    # BUG we ignore emphasis by ignoring bold words, italics, and other html inline formatting
-    text = div.get_text()
-    tokens = nltk.word_tokenize(text)
-    # print(tokens)
-    posts_tokenized.append(tokens)
-
-return posts_tokenized
+# get vocab
+# [page_vocab.append(word) for entry in all_words for word in entry]
