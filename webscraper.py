@@ -4,6 +4,7 @@
 # imports
 from requests import get
 from bs4 import BeautifulSoup
+import time # TODO do i need this else where still?
 
 # -- PUBLIC -- #
 
@@ -41,6 +42,26 @@ def we_are_bot(soup):
         a_tags.append(tag)
 
     return len(a_tags) == 1
+
+# always returns human soup (never bot soup)
+def human_soup(webpage):
+    # soupify
+        # not human soup? return human_soup(soupify(webpage))
+        # human soup? return soup
+    soup = soupify(webpage)
+    if we_are_bot(soup):
+        print('botted waiting 3s')
+        time.sleep(3)
+        return human_soup(webpage)
+    else:
+        return soup
+
+    # # TODO make a function that will always return human soup based on we_are_bot
+    # if we_are_bot(soup):
+    #     new_soup = soupify(webpage)
+    #     return human_soup(webpage, new_soup) # NOTE this might be retarded
+    # else:
+    #     return soup
 
 def get_post_divs(soup):
     # TODO get only the divs with posts in them
