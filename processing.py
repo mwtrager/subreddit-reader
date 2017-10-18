@@ -8,7 +8,6 @@ def tokenize(entries):
     return [nltk.word_tokenize(entry) for entry in entries]
 
 def get_words(entries):
-    # TODO change variable name? tokens is a little ambiguous...
     # BUG using isalpha ignores some data like if someone typed '9gag' maybe
     all_words = []
     entry_words = []
@@ -46,10 +45,6 @@ def singular(word):
 
 # cleanup in aisle 2...
 def unusual_words(words):
-    # BUG getting normal words still, blame plural() i think?
-    # NOTE this is the stopping point as far as adding processing logic to this branch!!!!
-        # I really shouldn't even be adding this in, but it's too late and too fun!
-    # BUG hey listen! nltk english vocab does NOT include plurals
 
     # -- NOTE
         # words has plurals in it
@@ -60,16 +55,6 @@ def unusual_words(words):
         # therefore i want to replace the plural version of the word with singular
         # then check words against english_vocab
     # --
-
-
-    # TODO  for word in words:
-    # if word is not in english_vocab
-    # if singular word is not in english_vocab
-        # good.
-
-
-
-
 
     # NOTE NOTE NOTE NOTE
     # BINGO BANGO
@@ -83,25 +68,4 @@ def unusual_words(words):
             if singular(word) not in usuals:
                 unusuals.append(word)
 
-
-    # words is lowercase alphabetic words
-    # TODO if word or plural(word) is in words, don't return it
-    # for word in words:
-    #     if not word or plural(word) in words:
-    #         unusuals.append(word)
-
-    # pluralise every word in words and add it to words
-    # then get difference?
-    # plurals = []
-    # [plurals.append(plural(word)) for word in words]
-    # plurals = set(plurals)
-    #
-    # unusuals = words - usuals # NOTE this words...
-    # unusuals = plurals - usuals
     return sorted(unusuals)
-# def stress(pron):
-# ...     return [char for phone in pron for char in phone if char.isdigit()]
-
-
-# get vocab
-# [page_vocab.append(word) for entry in all_words for word in entry]
