@@ -54,6 +54,7 @@ def human_soup(webpage):
         time.sleep(3)
         return human_soup(webpage)
     else:
+        print('this is human soup boi')
         return soup
 
     # # TODO make a function that will always return human soup based on we_are_bot
