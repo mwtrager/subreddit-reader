@@ -1,4 +1,5 @@
 # this module will do NLP using input from the webscraper
+
 import nltk
 
 def tokenize(entries):
@@ -35,24 +36,37 @@ def plural(word):
 def singular(word):
     # BUG i would say possessives, but those are tokenized and aren't included?
         # STILL they type "shes" instead of "she's" and "shes" will get transformed to "sh"
-    # BUG words that are singular ending in e should just remove the s
-        # NOTE take away the es
-            # if it can't pluralise to end in 'es' then it is a "singular ending in e" plural
-            # this doesnt work though w/ "aches" like in "headaches" and other similar words
-                # list of valid words that end like this
-                # [word for word in english if wword.endswith('che')]
-                    # this is a small list maybe it's a good idea to check against it
-                # luckily 'she' is the only word in english that ends in 'she'
-            # NOTE UGH what about [w for w in english if w.endswith('ches')] breeches, riches
-            # NOTE UGH theres even [w for w in english if w.endswith('shes')] ashes, brushes, +3 others
-        # mirror image of plural
+
+    # words ending in 'ies'
     if word.endswith('ies'):
         return word[:-3] + 'y'
+
+    # words ending in 'es'
     elif word[-2:] in ['es']:
-        return word[:-2]
+        # BUG words that are singular ending in e should just remove the s
+            # NOTE take away the es
+                # if it can't pluralise to end in 'es' then it is a "singular ending in e" plural
+                # this doesnt work though w/ "aches" like in "headaches" and other similar words
+                    # list of valid words that end like this
+                    # [word for word in english if wword.endswith('che')]
+                        # this is a small list maybe it's a good idea to check against it
+                    # luckily 'she' is the only word in english that ends in 'she'
+                # NOTE UGH what about [w for w in english if w.endswith('ches')] breeches, riches
+                # NOTE UGH theres even [w for w in english if w.endswith('shes')] ashes, brushes, +3 others
+        test = word[:-2]
+        if not plural(test) in [word]:
+            # it can't pluralize to end in 'es' therefore it's a singular ending in e NOTE not necessarily
+            # just remove the s
+            return word[:-1]
+        else:
+            return word[:-2]
+
+    # words ending in 'en'
     elif word.endswith('en'):
         return word[:-2] + 'an'
-    else: # ends in 's'
+
+    # words ending in 's'
+    else:
         return word[:-1]
 
 def unusual_words(words):

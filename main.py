@@ -8,7 +8,7 @@ from processing import *
 def test_unusual_words(urls):
     # i want to get all the unusal words from each url in urls
     for url in urls:
-        print('unusual words for ' + url)
+        print('trying to get ' + url)
         soup = human_soup(url)
         divs = get_divs(soup)
         text = get_raw(divs)
