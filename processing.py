@@ -4,7 +4,7 @@ import nltk
 def tokenize(entries):
     # TODO error check
     # BUG I'm getting garbage data from links and shit
-    # NOTE This returns a list of comments, so using len(tokens) returns op + # of comments
+    # NOTE This returns a list of comments, so using len(comments) returns op + # of comments
     return [nltk.word_tokenize(entry) for entry in entries]
 
 def get_words(entries):
@@ -33,7 +33,19 @@ def plural(word):
         return word + 's'
 
 def singular(word):
-    # mirror image of plural
+    # BUG i would say possessives, but those are tokenized and aren't included?
+        # STILL they type "shes" instead of "she's" and "shes" will get transformed to "sh"
+    # BUG words that are singular ending in e should just remove the s
+        # NOTE take away the es
+            # if it can't pluralise to end in 'es' then it is a "singular ending in e" plural
+            # this doesnt work though w/ "aches" like in "headaches" and other similar words
+                # list of valid words that end like this
+                # [word for word in english if wword.endswith('che')]
+                    # this is a small list maybe it's a good idea to check against it
+                # luckily 'she' is the only word in english that ends in 'she'
+            # NOTE UGH what about [w for w in english if w.endswith('ches')] breeches, riches
+            # NOTE UGH theres even [w for w in english if w.endswith('shes')] ashes, brushes, +3 others
+        # mirror image of plural
     if word.endswith('ies'):
         return word[:-3] + 'y'
     elif word[-2:] in ['es']:
@@ -43,29 +55,13 @@ def singular(word):
     else: # ends in 's'
         return word[:-1]
 
-# cleanup in aisle 2...
 def unusual_words(words):
-
-    # -- NOTE
-        # words has plurals in it
-        # english_vocab does not
-
-        # i need all words that don't appear in english_vocab
-        # plurals don't appear in english_vocab, but they aren't "unusual"
-        # therefore i want to replace the plural version of the word with singular
-        # then check words against english_vocab
-    # --
-
-    # NOTE NOTE NOTE NOTE
-    # BINGO BANGO
-    # I need a smaller dataset to dive into what's making it here and what isn't
-    # Mostly to debug plural and singular functions
-    # And the future tense-sensing-functions
-    usuals = set(word.lower() for word in nltk.corpus.words.words())
+    english = set(word.lower() for word in nltk.corpus.words.words())
     unusuals = []
     for word in words:
-        if word not in usuals:
-            if singular(word) not in usuals:
+        # BUG galore singularizing words that may not need it?
+        if word not in english:
+            if singular(word) not in english:
                 unusuals.append(word)
 
     return sorted(unusuals)
