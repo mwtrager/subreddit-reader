@@ -86,7 +86,7 @@ post_divs = get_post_divs(sub_soup)
 post_links = get_post_links(post_divs)
 test_unusual_words(post_links)
 
-print('hello')
+print('hello some more')
 
 
 # post = 'https://www.reddit.com/r/netsecstudents/comments/76waon/does_wpa2_protect_unecrypted_http_traffic/'
