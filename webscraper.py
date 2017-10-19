@@ -6,6 +6,8 @@ from requests import get
 from bs4 import BeautifulSoup
 import time # TODO do i need this else where still?
 
+# BUG top 200 comments only. gotta dive deeper for all the comments
+
 # -- PUBLIC -- #
 
 def get_reddit_posts(url):
