@@ -4,11 +4,10 @@ import nltk
 def tokenize(entries):
     # TODO error check
     # BUG I'm getting garbage data from links and shit
-    # NOTE This returns a list of comments, so using len(tokens) returns op + # of comments
+    # NOTE This returns a list of comments, so using len(comments) returns op + # of comments
     return [nltk.word_tokenize(entry) for entry in entries]
 
 def get_words(entries):
-    # TODO change variable name? tokens is a little ambiguous...
     # BUG using isalpha ignores some data like if someone typed '9gag' maybe
     all_words = []
     entry_words = []
@@ -23,9 +22,46 @@ def get_vocab(words):
 def lexical_diversity(words, vocab):
     return len(vocab)/len(words)
 
-# def stress(pron):
-# ...     return [char for phone in pron for char in phone if char.isdigit()]
+def plural(word):
+    if word.endswith('y'):
+        return word [:-1] + 'ies'
+    elif word[-1] in 'sx' or word[-2:] in ['sh', 'ch']:
+        return word + 'es'
+    elif word.endswith('an'):
+        return word[:-2] + 'en'
+    else:
+        return word + 's'
 
+def singular(word):
+    # BUG i would say possessives, but those are tokenized and aren't included?
+        # STILL they type "shes" instead of "she's" and "shes" will get transformed to "sh"
+    # BUG words that are singular ending in e should just remove the s
+        # NOTE take away the es
+            # if it can't pluralise to end in 'es' then it is a "singular ending in e" plural
+            # this doesnt work though w/ "aches" like in "headaches" and other similar words
+                # list of valid words that end like this
+                # [word for word in english if wword.endswith('che')]
+                    # this is a small list maybe it's a good idea to check against it
+                # luckily 'she' is the only word in english that ends in 'she'
+            # NOTE UGH what about [w for w in english if w.endswith('ches')] breeches, riches
+            # NOTE UGH theres even [w for w in english if w.endswith('shes')] ashes, brushes, +3 others
+        # mirror image of plural
+    if word.endswith('ies'):
+        return word[:-3] + 'y'
+    elif word[-2:] in ['es']:
+        return word[:-2]
+    elif word.endswith('en'):
+        return word[:-2] + 'an'
+    else: # ends in 's'
+        return word[:-1]
 
-# get vocab
-# [page_vocab.append(word) for entry in all_words for word in entry]
+def unusual_words(words):
+    english = set(word.lower() for word in nltk.corpus.words.words())
+    unusuals = []
+    for word in words:
+        # BUG galore singularizing words that may not need it?
+        if word not in english:
+            if singular(word) not in english:
+                unusuals.append(word)
+
+    return sorted(unusuals)

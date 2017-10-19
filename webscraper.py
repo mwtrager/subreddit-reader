@@ -4,6 +4,9 @@
 # imports
 from requests import get
 from bs4 import BeautifulSoup
+import time # TODO do i need this else where still?
+
+# BUG top 200 comments only. gotta dive deeper for all the comments
 
 # -- PUBLIC -- #
 
@@ -42,9 +45,52 @@ def we_are_bot(soup):
 
     return len(a_tags) == 1
 
+# always returns human soup (never bot soup)
+def human_soup(webpage):
+    # soupify
+        # not human soup? return human_soup(soupify(webpage))
+        # human soup? return soup
+    soup = soupify(webpage)
+    if we_are_bot(soup):
+        print('botted waiting 3s')
+        time.sleep(3)
+        return human_soup(webpage)
+    else:
+        print('this is human soup boi')
+        return soup
+
+    # # TODO make a function that will always return human soup based on we_are_bot
+    # if we_are_bot(soup):
+    #     new_soup = soupify(webpage)
+    #     return human_soup(webpage, new_soup) # NOTE this might be retarded
+    # else:
+    #     return soup
+
+def get_post_divs(soup):
+    # TODO get only the divs with posts in them
+    # looks like a div with class entry is good NOTE if I make sure that I am indeed on a subreddit home page TODO
+    # gotta then get all the a tags under that div but theres more than one a-tag there
+    post_divs = soup.find_all('div', class_='entry')
+    return post_divs
+
+def get_post_links(post_divs):
+    # TODO error checking?
+    # NOTE i can't belive this works!
+    post_links = []
+    prefix = 'https://www.reddit.com'
+    for post_div in post_divs:
+        tag = post_div.find('a')
+        suffix = tag['href']
+        # BUG have to prepend each url with this string:
+        post_links.append(prefix + suffix)
+    return post_links
+
+# okay lets say i have a list of a_tags...
+# next move, go through each a_tag and perform what is in main...
+
 # get the divs from the soup that we need
 def get_divs(soup):
-    divs = soup('div', class_='usertext-body')
+    divs = soup.find_all('div', class_='usertext-body')
     # HACK ignore divs[0] first one because it's the sidebar
     divs = divs[1:]
     return divs
