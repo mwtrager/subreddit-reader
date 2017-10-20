@@ -16,12 +16,16 @@ def test_unusual_words(urls):
         print('number of comments: ' + str(len(comments)))
         words = get_words(comments)
         vocab = get_vocab(words)
-        print(unusual_words(vocab))
+        target = unusual_words(vocab)
+        print('lexical diversity: ' + str(lexical_diversity(words, vocab)))
+        print('number of unusual words: ' + str(len(target)))
+        print(target)
         print('\n\n')
 
     return 1
 
 # -- START -- #
+print('get all unusual words from all the posts on a subreddits frontpage')
 base_url = 'https://www.reddit.com/r/'
 subreddit = input('enter a subreddit: ') # TODO error checking needs to happen here
 sub_soup = human_soup(base_url + subreddit)
