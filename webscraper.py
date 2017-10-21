@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import time # TODO do i need this else where still?
 
 # BUG top 200 comments only. gotta dive deeper for all the comments
-
+# TODO don't show the link, get the text of the title of post
 # -- PUBLIC -- #
 
 def get_reddit_posts(url):
