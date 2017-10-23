@@ -1,5 +1,13 @@
 # this module will do NLP using input from the webscraper
+
 import nltk
+
+# build set of english words
+english = set(word.lower() for word in nltk.corpus.words.words())
+# build possible singulars once
+possible_singulars_es = [word for word in english if (word.endswith('shes') or word.endswith('ches')) ]
+possible_singulars_ies = [word for word in english if (word.endswith('ies') or word.endswith('ie'))]
+possible_singulars_ens = [word for word in english if word.endswith('en')]
 
 def tokenize(entries):
     # TODO error check
@@ -32,31 +40,55 @@ def plural(word):
     else:
         return word + 's'
 
+# TODO observe the order of the if statements and choose most efficient order
+# BUG words ending in 'ens' aren't accounted for
 def singular(word):
-    # BUG i would say possessives, but those are tokenized and aren't included?
-        # STILL they type "shes" instead of "she's" and "shes" will get transformed to "sh"
-    # BUG words that are singular ending in e should just remove the s
-        # NOTE take away the es
-            # if it can't pluralise to end in 'es' then it is a "singular ending in e" plural
-            # this doesnt work though w/ "aches" like in "headaches" and other similar words
-                # list of valid words that end like this
-                # [word for word in english if wword.endswith('che')]
-                    # this is a small list maybe it's a good idea to check against it
-                # luckily 'she' is the only word in english that ends in 'she'
-            # NOTE UGH what about [w for w in english if w.endswith('ches')] breeches, riches
-            # NOTE UGH theres even [w for w in english if w.endswith('shes')] ashes, brushes, +3 others
-        # mirror image of plural
+    # words ending in 'ies'
     if word.endswith('ies'):
-        return word[:-3] + 'y'
-    elif word[-2:] in ['es']:
-        return word[:-2]
+        # first check if the unchanged word is in possible_singulars_ies
+        if word in possible_singulars_ies:
+            return word
+        # then check if the word minus s in in possible_singulars_ies
+        elif word[:-1] in possible_singulars_ies:
+            return word[:-1]
+        # NOTE do i need the pluralization test
+        # otherwise switch to y
+        else:
+            return word[:-3] + 'y'
+
+    # words ending in 'es'
+    elif word.endswith('es'):
+        # first check if the unchanged word is in possible_singulars_es
+        if word in possible_singulars_es:
+            return word
+        # then check if the word minus s is in possible_singulars_es MAYBE
+        elif word[:-1] in possible_singulars_es:
+            return word[:-1]
+        # then do the pluralization test
+        elif not plural(word[:-2]) in [word]:
+            # it can't pluralize to end in 'es' therefore it's a singular ending in e NOTE not necessarily
+            return word[:-1]
+        # otherwise just return minus 'es'
+        else:
+            return word[:-2]
+
+    # words ending in 'en'
     elif word.endswith('en'):
+        if word in possible_singulars_en:
+            return word
         return word[:-2] + 'an'
-    else: # ends in 's'
+
+    # words ending in 's'
+    elif word.endswith('s'):
+        # BUG difficulty: high... singular('ashess') returns 'ashes'
         return word[:-1]
 
+    # NOTE catch all -- might not need
+    else:
+        return word
+
+# TODO and the number of times they appear
 def unusual_words(words):
-    english = set(word.lower() for word in nltk.corpus.words.words())
     unusuals = []
     for word in words:
         # BUG galore singularizing words that may not need it?
