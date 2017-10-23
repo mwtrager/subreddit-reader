@@ -8,6 +8,9 @@ import time # TODO do i need this else where still?
 
 # BUG top 200 comments only. gotta dive deeper for all the comments
 # TODO don't show the link, get the text of the title of post
+# TODO make it work even when the first post isn't a text post (could be pic or link elsewhere)
+    # careful if it links to another reddit post
+
 # -- PUBLIC -- #
 
 def get_reddit_posts(url):
