@@ -74,7 +74,7 @@ def singular(word):
 
     # words ending in 'en'
     elif word.endswith('en'):
-        if word in possible_singulars_en:
+        if word in possible_singulars_ens:
             return word
         return word[:-2] + 'an'
 
