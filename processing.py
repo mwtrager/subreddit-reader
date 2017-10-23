@@ -4,7 +4,7 @@ import nltk
 
 # build set of english words
 english = set(word.lower() for word in nltk.corpus.words.words())
-# build possible singulars once
+# build possible singulars once yep
 possible_singulars_es = [word for word in english if (word.endswith('shes') or word.endswith('ches')) ]
 possible_singulars_ies = [word for word in english if (word.endswith('ies') or word.endswith('ie'))]
 possible_singulars_ens = [word for word in english if word.endswith('en')]
