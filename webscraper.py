@@ -1,32 +1,14 @@
-# this module builds lists of text from reddit posts and comments
+# this program builds lists of words from comments on a given reddit post
 # written by Matthew Trager, started 10/7/2017
 
 # imports
 from requests import get
 from bs4 import BeautifulSoup
-import time # TODO do i need this else where still?
-
-# BUG top 200 comments only. gotta dive deeper for all the comments
-# TODO don't show the link, get the text of the title of post
-# TODO make it work even when the first post isn't a text post (could be pic or link elsewhere)
-    # careful if it links to another reddit post
-
-# -- PUBLIC -- #
-
-def get_reddit_posts(url):
-    soup = soupify(url)
-
-    # TODO how do we do proper returns?
-    if we_are_bot(soup):
-        return []
-    else:
-        # TODO error checking to make sure it's a reddit POST and not any other reddit page
-        posts = get_posts_tokenized(soup)
-        return posts
-
-# -- PRIVATE -- #
+import nltk
 
 def soupify(webpage):
+    print('Making soup with ' + webpage)
+
     # get a post
     # TODO some sort of error checking here
     r = get(webpage)
@@ -48,58 +30,50 @@ def we_are_bot(soup):
 
     return len(a_tags) == 1
 
-# always returns human soup (never bot soup)
-def human_soup(webpage):
-    # soupify
-        # not human soup? return human_soup(soupify(webpage))
-        # human soup? return soup
-    soup = soupify(webpage)
-    if we_are_bot(soup):
-        print('botted waiting 3s')
-        time.sleep(3)
-        return human_soup(webpage)
-    else:
-        print('this is human soup boi')
-        return soup
+# filter the soup, get the text, tokenize with nltk
+def get_posts_tokenized(soup):
+    # find all divs with class usertext-body
+    divs = soup('div', class_='usertext-body')
 
-    # # TODO make a function that will always return human soup based on we_are_bot
-    # if we_are_bot(soup):
-    #     new_soup = soupify(webpage)
-    #     return human_soup(webpage, new_soup) # NOTE this might be retarded
-    # else:
-    #     return soup
-
-def get_post_divs(soup):
-    # TODO get only the divs with posts in them
-    # looks like a div with class entry is good NOTE if I make sure that I am indeed on a subreddit home page TODO
-    # gotta then get all the a tags under that div but theres more than one a-tag there
-    post_divs = soup.find_all('div', class_='entry')
-    return post_divs
-
-def get_post_links(post_divs):
-    # TODO error checking?
-    # NOTE i can't belive this works!
-    post_links = []
-    prefix = 'https://www.reddit.com'
-    for post_div in post_divs:
-        tag = post_div.find('a')
-        suffix = tag['href']
-        # BUG have to prepend each url with this string:
-        post_links.append(prefix + suffix)
-    return post_links
-
-# okay lets say i have a list of a_tags...
-# next move, go through each a_tag and perform what is in main...
-
-# get the divs from the soup that we need
-def get_divs(soup):
-    divs = soup.find_all('div', class_='usertext-body')
-    # HACK ignore divs[0] first one because it's the sidebar
+    # ignore the first one because its garbage
+    # TODO fix this
     divs = divs[1:]
-    return divs
 
-def get_raw(divs):
+    # tokenize comments
+    posts_tokenized = []
+    for div in divs:
+        # use div.get_text to get all text of all children nodes to div.usertext-body
+        text = div.get_text()
+        tokens = nltk.word_tokenize(text)
+        # print(tokens)
+        posts_tokenized.append(tokens)
+
+    return posts_tokenized
+
+def get_comments_text(soup):
+    # TODO maybe
+    return comments_text
+
+def get_op(posts):
     # TODO error check
-    # BUG I'm getting some garbage data with links and whatever
-        # how to avoid?
-    return [div.get_text() for div in divs]
+    op = posts[0]
+    return op
+
+def get_comments(posts):
+    # TODO error check
+    comments = posts[1:]
+
+# -- PROGRAM START! -- #
+# def get_reddit_post(url):
+url = 'https://www.reddit.com/r/cscareerquestions/comments/751ylo/do_you_think_developers_should_be_shielded/'
+soup = soupify(url)
+
+if we_are_bot(soup):
+    print ('detected as a bot :(')
+else:
+    # TODO error checking to make sure it's a reddit POST and not any other reddit page
+    posts = get_posts_tokenized(soup)
+    op = get_op(posts)
+    comments = get_comments(posts)
+    print(op)
+    
