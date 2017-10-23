@@ -7,6 +7,7 @@ english = set(word.lower() for word in nltk.corpus.words.words())
 # build possible singulars once
 possible_singulars_es = [word for word in english if (word.endswith('shes') or word.endswith('ches')) ]
 possible_singulars_ies = [word for word in english if (word.endswith('ies') or word.endswith('ie'))]
+possible_singulars_ens = [word for word in english if word.endswith('en')]
 
 def tokenize(entries):
     # TODO error check
@@ -39,6 +40,8 @@ def plural(word):
     else:
         return word + 's'
 
+# TODO observe the order of the if statements and choose most efficient order
+# BUG words ending in 'ens' aren't accounted for
 def singular(word):
     # words ending in 'ies'
     if word.endswith('ies'):
@@ -54,7 +57,7 @@ def singular(word):
             return word[:-3] + 'y'
 
     # words ending in 'es'
-    elif word[-2:] in ['es']:
+    elif word.endswith('es'):
         # first check if the unchanged word is in possible_singulars_es
         if word in possible_singulars_es:
             return word
@@ -69,11 +72,10 @@ def singular(word):
         else:
             return word[:-2]
 
-    # TODO next up!
     # words ending in 'en'
-    # ens = [word for word in english if word.endswith('en')]
-        # len(ens) is 1428
     elif word.endswith('en'):
+        if word in possible_singulars_en:
+            return word
         return word[:-2] + 'an'
 
     # words ending in 's'
