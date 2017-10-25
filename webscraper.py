@@ -11,8 +11,6 @@ import time # TODO do i need this else where still?
 # TODO make it work even when the first post isn't a text post (could be pic or link elsewhere)
     # careful if it links to another reddit post
 
-# -- PUBLIC -- #
-
 def get_reddit_posts(url):
     soup = soupify(url)
 
@@ -23,8 +21,6 @@ def get_reddit_posts(url):
         # TODO error checking to make sure it's a reddit POST and not any other reddit page
         posts = get_posts_tokenized(soup)
         return posts
-
-# -- PRIVATE -- #
 
 def soupify(webpage):
     # get a post
@@ -62,13 +58,6 @@ def human_soup(webpage):
         print('this is human soup boi')
         return soup
 
-    # # TODO make a function that will always return human soup based on we_are_bot
-    # if we_are_bot(soup):
-    #     new_soup = soupify(webpage)
-    #     return human_soup(webpage, new_soup) # NOTE this might be retarded
-    # else:
-    #     return soup
-
 def get_post_divs(soup):
     # TODO get only the divs with posts in them
     # looks like a div with class entry is good NOTE if I make sure that I am indeed on a subreddit home page TODO
@@ -88,9 +77,6 @@ def get_post_links(post_divs):
         post_links.append(prefix + suffix)
     return post_links
 
-# okay lets say i have a list of a_tags...
-# next move, go through each a_tag and perform what is in main...
-
 # get the divs from the soup that we need
 def get_divs(soup):
     divs = soup.find_all('div', class_='usertext-body')
@@ -103,3 +89,13 @@ def get_raw(divs):
     # BUG I'm getting some garbage data with links and whatever
         # how to avoid?
     return [div.get_text() for div in divs]
+
+# just get the title of the post from the frontpage
+def get_post_titles(soup):
+    # NOTE this is subreddit soup
+    titles = []
+    [titles.append(tag.get_text()) for tag in soup('a', 'title')] # list of title text
+    # print(titles)
+
+    # get text from <a> w/ class title
+    return titles

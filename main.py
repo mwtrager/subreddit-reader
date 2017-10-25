@@ -29,6 +29,13 @@ print('get all unusual words from all the posts on a subreddits frontpage')
 base_url = 'https://www.reddit.com/r/'
 subreddit = input('enter a subreddit: ') # TODO error checking needs to happen here
 sub_soup = human_soup(base_url + subreddit)
-post_divs = get_post_divs(sub_soup)
-post_links = get_post_links(post_divs)
-test_unusual_words(post_links)
+titles = get_post_titles(sub_soup)
+[print(title) for title in titles]
+
+
+
+
+
+# post_divs = get_post_divs(sub_soup)
+# post_links = get_post_links(post_divs)
+# test_unusual_words(post_links)
