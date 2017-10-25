@@ -1,7 +1,7 @@
 # this module builds lists of text from reddit posts and comments
 # written by Matthew Trager, started 10/7/2017
 
-# imports
+# importsasdf
 from requests import get
 from bs4 import BeautifulSoup
 import time # TODO do i need this else where still?
