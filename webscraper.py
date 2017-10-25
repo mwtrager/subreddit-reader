@@ -1,7 +1,7 @@
 # this program builds lists of words from comments on a given reddit post
 # written by Matthew Trager, started 10/7/2017
 
-# imports
+# importsasdf
 from requests import get
 from bs4 import BeautifulSoup
 import nltk

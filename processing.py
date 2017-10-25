@@ -2,7 +2,7 @@
 
 import nltk
 
-# build set of english words
+# build set of english wordsasdf
 english = set(word.lower() for word in nltk.corpus.words.words())
 # build possible singulars once yep
 possible_singulars_es = [word for word in english if (word.endswith('shes') or word.endswith('ches')) ]
