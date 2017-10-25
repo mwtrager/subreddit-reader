@@ -3,7 +3,7 @@
 from webscraper import *
 from processing import *
 
-# NOTEsdfg
+# NOTE
 # currently testing unusual_words!
 def test_unusual_words(urls):
     # i want to get all the unusal words from each url in urls
