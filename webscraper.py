@@ -7,20 +7,8 @@ from bs4 import BeautifulSoup
 import time # TODO do i need this else where still?
 
 # BUG top 200 comments only. gotta dive deeper for all the comments
-# TODO don't show the link, get the text of the title of post
 # TODO make it work even when the first post isn't a text post (could be pic or link elsewhere)
     # careful if it links to another reddit post
-
-def get_reddit_posts(url):
-    soup = soupify(url)
-
-    # TODO how do we do proper returns?
-    if we_are_bot(soup):
-        return []
-    else:
-        # TODO error checking to make sure it's a reddit POST and not any other reddit page
-        posts = get_posts_tokenized(soup)
-        return posts
 
 def soupify(webpage):
     # get a post
@@ -46,9 +34,6 @@ def we_are_bot(soup):
 
 # always returns human soup (never bot soup)
 def human_soup(webpage):
-    # soupify
-        # not human soup? return human_soup(soupify(webpage))
-        # human soup? return soup
     soup = soupify(webpage)
     if we_are_bot(soup):
         print('botted waiting 3s')
@@ -62,7 +47,7 @@ def get_post_divs(soup):
     # TODO get only the divs with posts in them
     # looks like a div with class entry is good NOTE if I make sure that I am indeed on a subreddit home page TODO
     # gotta then get all the a tags under that div but theres more than one a-tag there
-    post_divs = soup.find_all('div', class_='entry')
+    post_divs = soup('div', class_='entry')
     return post_divs
 
 def get_post_links(post_divs):
@@ -79,7 +64,7 @@ def get_post_links(post_divs):
 
 # get the divs from the soup that we need
 def get_divs(soup):
-    divs = soup.find_all('div', class_='usertext-body')
+    divs = soup('div', class_='usertext-body')
     # HACK ignore divs[0] first one because it's the sidebar
     divs = divs[1:]
     return divs
@@ -92,7 +77,8 @@ def get_raw(divs):
 
 # just get the title of the post from the frontpage
 def get_post_titles(soup):
-    # NOTE this is subreddit soup
+    # TODO error check that this is subreddit soup
+    # TODO i want these available so I can use them when I reach out to the title's page
     titles = []
     [titles.append(tag.get_text()) for tag in soup('a', 'title')] # list of title text
     # print(titles)

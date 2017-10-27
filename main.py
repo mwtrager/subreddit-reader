@@ -30,11 +30,12 @@ base_url = 'https://www.reddit.com/r/'
 subreddit = input('enter a subreddit: ') # TODO error checking needs to happen here
 sub_soup = human_soup(base_url + subreddit)
 titles = get_post_titles(sub_soup)
+
+# TODO use these titles to give an overview of posts that will be ripped
+    # and at the head of each loop so you give a good title
+print('\n')
+print('Posts to be ripped from', subreddit, '\n')
 [print(title) for title in titles]
-
-
-
-
 
 # post_divs = get_post_divs(sub_soup)
 # post_links = get_post_links(post_divs)
