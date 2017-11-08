@@ -46,11 +46,14 @@ def test_stuff(urls):
 
 print('\n COUNT COMMENTS BEFORE WEBDRIVING\n')
 # count comments normally with souping
+print('requesting reddit page...')
 soup = human_soup('https://www.reddit.com/r/AskReddit/comments/7aj2ek/what_over_1000_item_did_you_buy_and_did_not/')
 divs = get_divs(soup)
 text = get_raw(divs)
 comments = tokenize(text)
 print('number of comments: ' + str(len(comments)))
+print('print last comment:')
+print(comments[-1])
 
 print('\n START WEBDRIVING\n')
 
@@ -89,6 +92,8 @@ divs = get_divs(soup)
 text = get_raw(divs)
 comments = tokenize(text)
 print('number of comments: ' + str(len(comments)))
+print('print last comment:')
+print(comments[-1])
 
 # BUG it returns the same amount of comments after the click on the span
 
