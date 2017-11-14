@@ -42,6 +42,8 @@ def test_stuff(urls):
     return 1
 
 print('\n COUNT COMMENTS BEFORE WEBDRIVING\n')
+url = 'https://www.reddit.com/r/AskReddit/comments/7aj2ek/what_over_1000_item_did_you_buy_and_did_not/'
+print(get_num_comments(url))
 # count comments normally with souping
 print('requesting reddit page...')
 soup = human_soup('https://www.reddit.com/r/AskReddit/comments/7aj2ek/what_over_1000_item_did_you_buy_and_did_not/')
@@ -63,29 +65,25 @@ print('currently have', driver.current_url)
 
 # TODO add to comments as we click?
 def get_more_comments():
-    # the reason we are using selenium and phantomjs is below
-    print('finding final span w/ classname morecomments...')
     # a simple scrape to find spans that are "buttons" to show more comments
     spans = driver.find_elements_by_class_name('morecomments')
-    print('have spans')
-    if len(spans) >= 1:
-        print('hit if')
-        # the button is the <a> tag inside this span
-            # TODO dont use this method, use something more appropriate
-        button = spans[-1].find_elements_by_css_selector('*')[0]
-        # the magic
-        print('clicking:', button)
-        driver.execute_script('arguments[0].click()', button)
+    print('have', len(spans), '"load more comments" buttons') # NOTE this matches ctrl+f "load more comments"
+    for x in range(0, len(spans)):
+        if len(spans) >= 1:
+            print('hit if')
+            # the button is the <a> tag inside this span
+                # TODO dont use this method, use something more appropriate
+            button = spans[-1].find_elements_by_css_selector('*')[0]
+            # the magic
+            print('clicking:', button)
+            driver.execute_script('arguments[0].click()', button)
+            # wait for load
+            seconds = 1
+            print('waiting', seconds, 'second(s)...')
+            sleep(seconds)
 
-        # wait for load
-        seconds = 1
-        print('waiting', seconds, 'second(s)...')
-        sleep(seconds)
-
-# TODO how do I get the right number here?
-for x in range(0,189): # 2783
-    print(x)
-    get_more_comments()
+print('starting get_more_comments()')
+get_more_comments()
 
 print('\nloop complete. building soup...')
 # soupify driver.page_source

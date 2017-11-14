@@ -4,7 +4,9 @@
 # imports
 from requests import get
 from bs4 import BeautifulSoup
-import time # TODO do i need this else where still?
+from time import sleep
+from selenium import webdriver
+import re
 
 # BUG top 200 comments only. gotta dive deeper for all the comments
     # HEY you can use a query string to get 500 but that is a hard limit
@@ -42,7 +44,7 @@ def human_soup(webpage):
     soup = soupify(webpage)
     if we_are_bot(soup):
         print('botted waiting 3s')
-        time.sleep(3)
+        sleep(3)
         return human_soup(webpage)
     else:
         print('this is human soup boi')
@@ -91,4 +93,12 @@ def get_post_titles(soup):
     # get text from <a> w/ class title
     return titles
 
-# def get_num_comments()
+def get_num_comments(reddit_post_url):
+    # target in a.bylink.comments.may-blank tag
+    soup = human_soup(reddit_post_url)
+    target = soup('a', class_='comments')[0] # NOTE this works because there is only 1 match
+    # only want the integer from this, not all the text
+    target = target.get_text() # convert to string
+    target = int(re.search(r'\d+', target).group())
+    print(target, type(target))
+    return target
