@@ -90,3 +90,5 @@ def get_post_titles(soup):
 
     # get text from <a> w/ class title
     return titles
+
+# def get_num_comments()
