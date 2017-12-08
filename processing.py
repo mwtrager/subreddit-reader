@@ -29,6 +29,7 @@ def get_vocab(words):
     return set(words)
 
 def lexical_diversity(words, vocab):
+    # TODO division by zero error! haha finally got one :(
     return len(vocab)/len(words)
 
 def plural(word):

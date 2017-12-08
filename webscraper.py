@@ -3,10 +3,10 @@
 
 # imports
 from requests import get
-from bs4 import BeautifulSoup
 from time import sleep
-from selenium import webdriver
 import re
+from bs4 import BeautifulSoup
+from selenium import webdriver
 
 # BUG top 200 comments only. gotta dive deeper for all the comments
     # HEY you can use a query string to get 500 but that is a hard limit
@@ -100,5 +100,5 @@ def get_num_comments(reddit_post_url):
     # only want the integer from this, not all the text
     target = target.get_text() # convert to string
     target = int(re.search(r'\d+', target).group())
-    print(target, type(target))
+    # print(target, type(target))
     return target
