@@ -3,28 +3,19 @@
 
 # imports
 from requests import get
+from time import sleep
+import re
 from bs4 import BeautifulSoup
-import time # TODO do i need this else where still?
+from selenium import webdriver
 
 # BUG top 200 comments only. gotta dive deeper for all the comments
-# TODO don't show the link, get the text of the title of post
+    # HEY you can use a query string to get 500 but that is a hard limit
 # TODO make it work even when the first post isn't a text post (could be pic or link elsewhere)
     # careful if it links to another reddit post
 
-# -- PUBLIC -- #
-
-def get_reddit_posts(url):
-    soup = soupify(url)
-
-    # TODO how do we do proper returns?
-    if we_are_bot(soup):
-        return []
-    else:
-        # TODO error checking to make sure it's a reddit POST and not any other reddit page
-        posts = get_posts_tokenized(soup)
-        return posts
-
-# -- PRIVATE -- #
+# TODO i should check the number of comments
+    # for num_comments > 500, use library
+    # otherwise i should just do the usual
 
 def soupify(webpage):
     # get a post
@@ -50,30 +41,20 @@ def we_are_bot(soup):
 
 # always returns human soup (never bot soup)
 def human_soup(webpage):
-    # soupify
-        # not human soup? return human_soup(soupify(webpage))
-        # human soup? return soup
     soup = soupify(webpage)
     if we_are_bot(soup):
         print('botted waiting 3s')
-        time.sleep(3)
+        sleep(3)
         return human_soup(webpage)
     else:
         print('this is human soup boi')
         return soup
 
-    # # TODO make a function that will always return human soup based on we_are_bot
-    # if we_are_bot(soup):
-    #     new_soup = soupify(webpage)
-    #     return human_soup(webpage, new_soup) # NOTE this might be retarded
-    # else:
-    #     return soup
-
 def get_post_divs(soup):
     # TODO get only the divs with posts in them
     # looks like a div with class entry is good NOTE if I make sure that I am indeed on a subreddit home page TODO
     # gotta then get all the a tags under that div but theres more than one a-tag there
-    post_divs = soup.find_all('div', class_='entry')
+    post_divs = soup('div', class_='entry')
     return post_divs
 
 def get_post_links(post_divs):
@@ -88,12 +69,9 @@ def get_post_links(post_divs):
         post_links.append(prefix + suffix)
     return post_links
 
-# okay lets say i have a list of a_tags...
-# next move, go through each a_tag and perform what is in main...
-
 # get the divs from the soup that we need
 def get_divs(soup):
-    divs = soup.find_all('div', class_='usertext-body')
+    divs = soup('div', class_='usertext-body')
     # HACK ignore divs[0] first one because it's the sidebar
     divs = divs[1:]
     return divs
@@ -103,3 +81,24 @@ def get_raw(divs):
     # BUG I'm getting some garbage data with links and whatever
         # how to avoid?
     return [div.get_text() for div in divs]
+
+# just get the title of the post from the frontpage
+def get_post_titles(soup):
+    # TODO error check that this is subreddit soup
+    # TODO i want these available so I can use them when I reach out to the title's page
+    titles = []
+    [titles.append(tag.get_text()) for tag in soup('a', 'title')] # list of title text
+    # print(titles)
+
+    # get text from <a> w/ class title
+    return titles
+
+def get_num_comments(reddit_post_url):
+    # target in a.bylink.comments.may-blank tag
+    soup = human_soup(reddit_post_url)
+    target = soup('a', class_='comments')[0] # NOTE this works because there is only 1 match
+    # only want the integer from this, not all the text
+    target = target.get_text() # convert to string
+    target = int(re.search(r'\d+', target).group())
+    # print(target, type(target))
+    return target
