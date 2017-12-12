@@ -1,4 +1,4 @@
-# this module will do NLP using input from the webscraper
+# this module handles natural language processing
 
 import nltk
 
@@ -11,9 +11,8 @@ possible_singulars_ies = [word for word in english if (word.endswith('ies') or w
 possible_singulars_ens = [word for word in english if word.endswith('en')]
 
 def tokenize(entries):
-    # TODO error check
-    # BUG I'm getting garbage data from links and shit
-    # NOTE This returns a list of comments, so using len(comments) returns op + # of comments
+    # TODO error checking
+    # BUG links come in here and they are bad data points
     return [nltk.word_tokenize(entry) for entry in entries]
 
 def get_words(entries):
@@ -29,9 +28,10 @@ def get_vocab(words):
     return set(words)
 
 def lexical_diversity(words, vocab):
-    # TODO division by zero error! haha finally got one :(
+    # BUG division by zero error! haha finally got one :(
     return len(vocab)/len(words)
 
+# pluralizes a word (has bugs but i don't use this yet)
 def plural(word):
     if word.endswith('y'):
         return word [:-1] + 'ies'
@@ -89,13 +89,14 @@ def singular(word):
     else:
         return word
 
-# TODO and the number of times they appear
+# return words that are not in the nltk english dictionary
 def unusual_words(words):
     unusuals = []
     for word in words:
-        # BUG galore singularizing words that may not need it?
         if word not in english:
             if singular(word) not in english:
                 unusuals.append(word)
-
     return sorted(unusuals)
+
+# TODO lets make a function that can deal the verb issue
+    # ie: "running" is not an unusual word but i report it as such
