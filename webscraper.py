@@ -55,6 +55,7 @@ def subreddit_frontpage(soup):
     return links
 
 # gets the number comments from visiting the live subreddit and sums the number of comments below each post's title
+# BUG this is broken! it broke on /r/cscareerquestions
 def get_num_web_comments(soup):
     num_comments = 0
     # NOTE target in a.bylink.comments.may-blank tag subject to change

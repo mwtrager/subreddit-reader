@@ -2,30 +2,31 @@
 
 import nltk
 
+# lemmatization is to build a lemma from a word
+    # eg. running --> run (run is a lemma, running is not)
+# nltk has more than one stemmer available... choose one
+# nltk.WordNetLemmatizer() might be my best choice because according to the book
+    # it will always produce a valid list of lexicon headwords (words in the dictionary aka valid lemmas)
+    # the downside is that it takes longer because of extra processing
+
 # build set of english words
 english = set(word.lower() for word in nltk.corpus.words.words())
 # build possible singulars once
-possible_singulars_es = [word for word in english if (word.endswith('shes') or word.endswith('ches')) ]
+possible_singulars_es = [word for word in english if (word.endswith('shes') or word.endswith('ches'))]
 possible_singulars_ies = [word for word in english if (word.endswith('ies') or word.endswith('ie'))]
-# NOTE gotta cover 'ens' words below
-possible_singulars_ens = [word for word in english if word.endswith('en')]
+possible_singulars_ens = [word for word in english if (word.endswith('en') or word.endswith('ens'))]
 
-def tokenize(entries):
+def tokenize(entry):
     # TODO error checking
     # BUG links come in here and they are bad data points
-    return [nltk.word_tokenize(entry) for entry in entries]
+    return nltk.word_tokenize(entry)
 
-def get_words(entries):
+def get_words(tokens):
     # BUG using isalpha ignores some data like if someone typed '9gag' maybe
-    all_words = []
-    entry_words = []
-    for entry in entries:
-        entry_words.append([word.lower() for word in entry if word.isalpha()])
-        [all_words.append(word) for entry in entry_words for word in entry] # list comprehension. is this koshur?
-    return all_words
+    return [word.lower() for word in tokens if word.isalpha()]
 
 def get_vocab(words):
-    return set(words)
+    return set(words) # NOTE this returns a SET
 
 def lexical_diversity(words, vocab):
     # BUG division by zero error! haha finally got one :(
@@ -74,10 +75,21 @@ def singular(word):
         else:
             return word[:-2]
 
-    # words ending in 'en'
-    elif word.endswith('en'):
+    # words ending in 'ens'
+    elif word.endswith('ens'):
+        # first check if the unchanged word is in possible_singulars_ens
         if word in possible_singulars_ens:
             return word
+        # then check if the word minus s is in possible_singulars_ens
+        elif word[:-1] in possible_singulars_ens:
+            return word[:-1]
+
+    # words ending in 'en'
+    elif word.endswith('en'):
+        # return it if it's already singular
+        if word in possible_singulars_ens:
+            return word
+        # if it's not singular return it in singular form
         return word[:-2] + 'an'
 
     # words ending in 's'
@@ -98,5 +110,19 @@ def unusual_words(words):
                 unusuals.append(word)
     return sorted(unusuals)
 
+# return words that are not in the nltk english dictionary
+def unusual_words2(lemmas):
+    # i dont thinks this works
+    unusuals = []
+    for lemma in lemmas:
+        if lemma not in english:
+            unusuals.append(lemma)
+    return sorted(unusuals)
+
 # TODO lets make a function that can deal the verb issue
     # ie: "running" is not an unusual word but i report it as such
+
+def lemmatize(words):
+    # NOTE gotta do some mort testing but it seems WNL produces less unusual words than Porter/Lancaster stemmers
+    wnl = nltk.WordNetLemmatizer()
+    return [wnl.lemmatize(word) for word in words]
