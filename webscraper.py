@@ -49,7 +49,6 @@ def subreddit_frontpage(soup):
     prefix = 'https://www.reddit.com'
     for a in a_tags:
         suffix = a['href']
-        # if suffix contains prefix, just append suffix
         if prefix in suffix:
             links.append(suffix)
         else:
