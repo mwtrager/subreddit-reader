@@ -1,38 +1,20 @@
-# this module builds lists of text from reddit posts and comments
+# this module grabs content from reddit.com because we can build PRAW.Submission objects from post urls
+# here is where we get those urls
 # written by Matthew Trager, started 10/7/2017
 
-# imports
 from requests import get
+from time import sleep
+import re
 from bs4 import BeautifulSoup
-import time # TODO do i need this else where still?
 
-# BUG top 200 comments only. gotta dive deeper for all the comments
-# TODO don't show the link, get the text of the title of post
-# TODO make it work even when the first post isn't a text post (could be pic or link elsewhere)
-    # careful if it links to another reddit post
-
-# -- PUBLIC -- #
-
-def get_reddit_posts(url):
-    soup = soupify(url)
-
-    # TODO how do we do proper returns?
-    if we_are_bot(soup):
-        return []
-    else:
-        # TODO error checking to make sure it's a reddit POST and not any other reddit page
-        posts = get_posts_tokenized(soup)
-        return posts
-
-# -- PRIVATE -- #
-
+# soupify me captain!
 def soupify(webpage):
     # get a post
     # TODO some sort of error checking here
     r = get(webpage)
 
     # get html from response
-    # TODO can check for doctype=html formatt
+    # TODO can check for doctype=html format
     html = r.text
 
     # make me soup!
@@ -41,65 +23,49 @@ def soupify(webpage):
     return soup
 
 # for reddit when there is only one <a> on the page, it means we were detected as a bot
+# NOTE this is subject to change
 def we_are_bot(soup):
     a_tags = []
     for tag in soup.find_all('a'):
         a_tags.append(tag)
-
     return len(a_tags) == 1
 
 # always returns human soup (never bot soup)
 def human_soup(webpage):
-    # soupify
-        # not human soup? return human_soup(soupify(webpage))
-        # human soup? return soup
     soup = soupify(webpage)
     if we_are_bot(soup):
-        print('botted waiting 3s')
-        time.sleep(3)
+        print('botted, waiting 3s')
+        sleep(3) # it is recommended to wait after getting detected as a bot (so says the bot soup)
         return human_soup(webpage)
     else:
         print('this is human soup boi')
         return soup
 
-    # # TODO make a function that will always return human soup based on we_are_bot
-    # if we_are_bot(soup):
-    #     new_soup = soupify(webpage)
-    #     return human_soup(webpage, new_soup) # NOTE this might be retarded
-    # else:
-    #     return soup
-
-def get_post_divs(soup):
-    # TODO get only the divs with posts in them
-    # looks like a div with class entry is good NOTE if I make sure that I am indeed on a subreddit home page TODO
-    # gotta then get all the a tags under that div but theres more than one a-tag there
-    post_divs = soup.find_all('div', class_='entry')
-    return post_divs
-
-def get_post_links(post_divs):
-    # TODO error checking?
-    # NOTE i can't belive this works!
-    post_links = []
+# gets all the urls for each post on the subreddit's web frontpage
+def subreddit_frontpage(soup):
+    # TODO error checking
+    a_tags = soup('a', class_='comments')
+    links = []
     prefix = 'https://www.reddit.com'
-    for post_div in post_divs:
-        tag = post_div.find('a')
-        suffix = tag['href']
-        # BUG have to prepend each url with this string:
-        post_links.append(prefix + suffix)
-    return post_links
+    for a in a_tags:
+        suffix = a['href']
+        if prefix in suffix:
+            links.append(suffix)
+        else:
+            links.append(prefix + suffix)
+    return links
 
-# okay lets say i have a list of a_tags...
-# next move, go through each a_tag and perform what is in main...
-
-# get the divs from the soup that we need
-def get_divs(soup):
-    divs = soup.find_all('div', class_='usertext-body')
-    # HACK ignore divs[0] first one because it's the sidebar
-    divs = divs[1:]
-    return divs
-
-def get_raw(divs):
-    # TODO error check
-    # BUG I'm getting some garbage data with links and whatever
-        # how to avoid?
-    return [div.get_text() for div in divs]
+# gets the number comments from visiting the live subreddit and sums the number of comments below each post's title
+def get_num_web_comments(soup):
+    num_comments = 0
+    # NOTE target in a.bylink.comments.may-blank tag subject to change
+    elements = soup('a', class_='comments')
+    for element in elements:
+        # # only want the integer from this, not all the text
+        target = element.get_text()
+        match = re.search(r'\d+', target) # get just the number
+        if not match:
+            continue
+        target = int(match.group())
+        num_comments = num_comments + target
+    return num_comments
