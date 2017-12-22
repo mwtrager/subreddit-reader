@@ -16,21 +16,25 @@ user_agent='')
 soup = human_soup('https://www.reddit.com/r/'+subreddit+'/')
 posts = subreddit_frontpage(soup)
 print('Number of posts being sent in:', len(posts))
-
+[print(post) for post in posts]
+num_web_comments = get_num_web_comments(soup)
+print('number of web comments', num_web_comments)
 # IDEA i could use vocab as a set and search for certain words!
 
-for post in posts[:1]:
-    post = reddit.submission(url=post)
+num_api_comments = 0
+unusuals_list = []
+for post in posts:
+    post = reddit.submission(url=post) # BUG on posts that are outbound links
     print(post.title)
-    post.comments.replace_more(limit=1)
+    post.comments.replace_more(limit=1000)
     # TODO build these lists on the subreddit level
     raw_list = []
     tokens_list = []
     words_list = []
     vocab_list = []
     lemmas_list = []
-    unusuals_list = []
     for comment in post.comments:
+        num_api_comments = num_api_comments + 1
         raw = comment.body
         tokens = tokenize(raw)
         words = get_words(tokens)
@@ -46,4 +50,8 @@ for post in posts[:1]:
         if len(unusuals) > 0:
             unusuals_list.append(unusuals)
 
-    print(len(unusuals_list))
+# flatten list
+unusuals_list = [item for sublist in unusuals_list for item in sublist]
+print(sorted(set(unusuals_list)))
+print('number of api comments', num_api_comments)
+print('number of web comments', num_web_comments)

@@ -44,18 +44,19 @@ def human_soup(webpage):
 # gets all the urls for each post on the subreddit's web frontpage
 def subreddit_frontpage(soup):
     # TODO error checking
-    divs = soup('div', class_='entry')
+    a_tags = soup('a', class_='comments')
     links = []
     prefix = 'https://www.reddit.com'
-    for div in divs:
-        tag = div.find('a')
-        suffix = tag['href']
-        # BUG have to prepend each url with this string:
-        links.append(prefix + suffix)
+    for a in a_tags:
+        suffix = a['href']
+        # if suffix contains prefix, just append suffix
+        if prefix in suffix:
+            links.append(suffix)
+        else:
+            links.append(prefix + suffix)
     return links
 
 # gets the number comments from visiting the live subreddit and sums the number of comments below each post's title
-# BUG this is broken! it broke on /r/cscareerquestions
 def get_num_web_comments(soup):
     num_comments = 0
     # NOTE target in a.bylink.comments.may-blank tag subject to change
@@ -63,6 +64,9 @@ def get_num_web_comments(soup):
     for element in elements:
         # # only want the integer from this, not all the text
         target = element.get_text()
-        target = int(re.search(r'\d+', target).group()) # convert regex result to integer
+        match = re.search(r'\d+', target) # get just the number
+        if not match:
+            continue
+        target = int(match.group())
         num_comments = num_comments + target
     return num_comments

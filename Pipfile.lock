@@ -67,17 +67,17 @@
         },
         "praw": {
             "hashes": [
-                "sha256:396dc4b447d373929274b43afffdf25ed4f6c3ffe4166cc63500520782c0b515",
-                "sha256:144ee79f08e0cc08936de3fd6a7f8b196be127539de5e1d71680ad0e4af4c7b8"
+                "sha256:08c4f2b94d85d2308be79af5f61377fedfb7c6c645c5232fbcc4ab4068ad0954",
+                "sha256:267d9d853a4877e2dcc0f5c2c837b9c67b37f13e89add157f63fa943dc23d0af"
             ],
-            "version": "==5.2.0"
+            "version": "==5.3.0"
         },
         "prawcore": {
             "hashes": [
-                "sha256:34e3c71a9cda70025390e6d2c9acdac05525d111efa0531ab067131aff580120",
-                "sha256:02467ddea7d438859732ed3304e2b414789cd5edf41341629748cfea43d95d81"
+                "sha256:4924c05e8528ff89c0f0035da8f70dea8ae0b12735e4176815037ae2e2f76dd6",
+                "sha256:3fb71235d61307ed166b41e47fcd3f1167f9b1bb3630c5ebe1d83c00fd611d5a"
             ],
-            "version": "==0.12.0"
+            "version": "==0.13.0"
         },
         "requests": {
             "hashes": [
