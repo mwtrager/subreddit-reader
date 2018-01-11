@@ -1,10 +1,7 @@
 import praw
-from webscraper import *
-from processing import *
+import webscraper as ws
+import processing as pr
 
-# TODO get the score of each comment and somehow maintain that association!
-
-# get all links on the front page for PRAW to make object from these submissions
 # TODO error checking
 subreddit = input('enter a subreddit: ')
 
@@ -13,20 +10,23 @@ reddit = praw.Reddit(client_id='',
 client_secret='',
 user_agent='')
 
-soup = human_soup('https://www.reddit.com/r/'+subreddit+'/')
-posts = subreddit_frontpage(soup)
+# get all links on the frontpage of this subreddit for PRAW to make object from these submissions
+soup = ws.human_soup('https://www.reddit.com/r/'+subreddit+'/')
+posts = ws.subreddit_frontpage(soup)
 print('Number of posts being sent in:', len(posts))
-[print(post) for post in posts]
-num_web_comments = get_num_web_comments(soup)
 
-# IDEA i could use vocab as a set and search for certain words!
+# show all links generated
+[print(post) for post in posts]
+
+# count the # of comments reported by the web to compare to # of comments that the api returns
+num_web_comments = ws.get_num_web_comments(soup)
 
 num_api_comments = 0
 num_posts = 0
 unusuals_list = []
 for post in posts:
     num_posts = num_posts + 1
-    post = reddit.submission(url=post) # BUG on posts that are outbound links
+    post = reddit.submission(url=post)
     print(post.title)
     post.comments.replace_more(limit=None)
     # TODO build these lists on the subreddit level
@@ -38,11 +38,11 @@ for post in posts:
     for comment in post.comments.list():
         num_api_comments = num_api_comments + 1
         raw = comment.body
-        tokens = tokenize(raw)
-        words = get_words(tokens)
-        vocab = get_vocab(words)
-        lemmas = lemmatize(sorted(vocab)) # NOTE sorted turns this to a list
-        unusuals = unusual_words2(lemmas)
+        tokens = pr.tokenize(raw)
+        words = pr.get_words(tokens)
+        vocab = pr.get_vocab(words)
+        lemmas = pr.lemmatize(sorted(vocab)) # NOTE sorted turns this to a list
+        unusuals = pr.unusual_words(lemmas)
 
         raw_list.append(raw)
         tokens_list.append(tokens)

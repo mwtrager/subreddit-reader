@@ -61,7 +61,7 @@ def get_num_web_comments(soup):
     # NOTE target in a.bylink.comments.may-blank tag subject to change
     elements = soup('a', class_='comments')
     for element in elements:
-        # # only want the integer from this, not all the text
+        # only want the integer from this, not all the text
         target = element.get_text()
         match = re.search(r'\d+', target) # get just the number
         if not match:
