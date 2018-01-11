@@ -1,6 +1,5 @@
 # this module grabs content from reddit.com because we can build PRAW.Submission objects from post urls
 # here is where we get those urls
-# written by Matthew Trager, started 10/7/2017
 
 from requests import get
 from time import sleep
